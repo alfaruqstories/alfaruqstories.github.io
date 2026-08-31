@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Faruq</title>
+<meta name="description" content="Faruq — co-founder and Head of Product at Famasi Africa. Building pharmacy infrastructure for Nigeria and emerging markets." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ground: #ffffff;
+    --paper: #ffffff;
+    --paper-strong: #f3f1ec;
+    --ink: #111111;
+    --ink-soft: rgba(17,17,17,0.62);
+    --ink-faint: rgba(17,17,17,0.42);
+    --line: rgba(17,17,17,0.18);
+    --note-yellow: #f7e7b4;
+    --note-pink: #f3d5cd;
+    --book-1: #d9c9b4;
+    --book-2: #b9cdd8;
+    --book-3: #d8c3d6;
+    --book-4: #c9d6bd;
+    --font-sans: "Manrope", sans-serif;
+    --font-display: "Cormorant Garamond", serif;
+    --font-mono: "IBM Plex Mono", monospace;
+  }
+  body.mood-misty { --ground: #eaf3fa; --paper-strong: #e2edf6; }
+  body.mood-mint   { --ground: #e8f5ec; --paper-strong: #ddeee2; }
+  body.mood-cream  { --ground: #fbf3e4; --paper-strong: #f3e8d3; }
+  body.mood-blush  { --ground: #f9e8ec; --paper-strong: #f1dde3; }
+  body.mood-lavender { --ground: #f0eaf8; --paper-strong: #e8def2; }
+  body.mood-sky    { --ground: #e4f0f9; --paper-strong: #d9e9f4; }
+  body.mood-peach  { --ground: #fbeedd; --paper-strong: #f3e2c9; }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink);
+    background: var(--ground);
+    line-height: 1.4;
+    transition: background 0.4s ease;
+  }
+
+  .deck {
+    width: min(100%, 88rem);
+    height: 100dvh;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 11.25rem minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas: "side main" "foot foot";
+    background: var(--ground);
+    box-shadow: 0 0 60px rgba(17,17,17,0.12);
+    position: relative;
+    transition: background 0.4s ease;
+  }
+
+  /* ---------- mode pill ---------- */
+  .modes {
+    position: absolute;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper);
+  }
+  .modes span {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+    color: var(--ink-faint);
+  }
+  .modes span.active { background: var(--ink); color: var(--paper); }
+  .modes__select { display: none; }
+
+  /* ---------- left rail ---------- */
+  .side {
+    grid-area: side;
+    padding: 3rem 1.6rem 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .side__top { display: grid; gap: 2rem; }
+  .side__spacer { height: 1.5rem; }
+  .side__nav { display: grid; gap: 0.1rem; }
+  .side__nav a {
+    display: block;
+    padding: 0.5rem 0;
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 0.78rem;
+  }
+  .side__nav a:hover { text-decoration: underline; text-underline-offset: 0.25em; }
+  .side__nav a.active { text-decoration: underline; text-underline-offset: 0.25em; }
+
+  .side__icons {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0.3rem 0;
+  }
+  .side__icons a {
+    display: inline-flex;
+    color: var(--ink);
+    opacity: 0.75;
+    transition: opacity 0.15s ease;
+  }
+  .side__icons a:hover { opacity: 1; }
+  .side__bottom {
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: 3.5rem;
+  }
+  .side__bottom .mood-toggle { margin-left: 0.35rem; }
+  .mood-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: conic-gradient(
+      #f9e8ec, #eaf3fa, #e8f5ec, #fbf3e4,
+      #f0eaf8, #e4f0f9, #fbeedd, #f9e8ec
+    );
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 0.15s ease, transform 0.2s ease;
+  }
+  .mood-toggle:hover { opacity: 1; transform: rotate(90deg); }
+
+  /* ---------- footer ---------- */
+  .foot {
+    grid-area: foot;
+    padding: 0.4rem 1.6rem 0.8rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .foot__left { display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .foot__name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(4rem, 14vw, 15rem);
+    line-height: 0.8;
+    letter-spacing: -0.08em;
+    color: var(--ink);
+  }
+  .foot__name .init { display: none; }
+  .foot__status {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: var(--note-yellow);
+    padding: 0.45rem 0.95rem;
+    border-radius: 999px;
+  }
+  .posts {
+    display: grid;
+    gap: 0.45rem;
+    justify-self: end;
+    align-self: end;
+    padding-bottom: 0.4rem;
+    max-width: 16rem;
+  }
+  .posts a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.8rem;
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 0.84rem;
+    padding: 0.26rem 0;
+  }
+  .posts a span:last-child { color: var(--ink-faint); font-size: 0.74rem; }
+  .posts a:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+
+  /* ---------- main ---------- */
+  .main {
+    grid-area: main;
+    min-height: 0;
+    padding: 1rem 2.6rem 0 2rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+  .main__left { width: 100%; margin-top: 4rem; }
+  .books {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.6rem;
+    align-items: end;
+  }
+  .book {
+    position: relative;
+    background: var(--book-1);
+    border-radius: 3px 10px 10px 3px;
+    min-height: 18.5rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 12px 28px rgba(17,17,17,0.2);
+    transform: rotate(-1.3deg);
+    text-decoration: none;
+    color: var(--ink);
+    opacity: 0;
+    animation: bookIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    overflow: hidden;
+  }
+  .book:nth-child(2) { background: var(--book-2); transform: rotate(1deg); min-height: 17rem; animation-delay: 0.1s; }
+  .book:nth-child(3) { background: var(--book-3); transform: rotate(-0.7deg); min-height: 16.5rem; animation-delay: 0.2s; }
+  .book:nth-child(4) { background: var(--book-4); transform: rotate(1.4deg); min-height: 17.5rem; animation-delay: 0.3s; }
+  @keyframes bookIn {
+    from { opacity: 0; transform: translateX(-2rem) rotate(var(--rot, -1deg)) scale(0.97); }
+    to   { opacity: 1; transform: translateX(0) rotate(var(--rot, -1deg)) scale(1); }
+  }
+  .book__spine {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 0.6rem;
+    background: repeating-linear-gradient(180deg, rgba(17,17,17,0.16) 0 2px, transparent 2px 6px);
+    border-radius: 3px 0 0 3px;
+  }
+  .book__band {
+    height: 2.4rem;
+    background: rgba(17,17,17,0.09);
+    border-bottom: 1px solid rgba(17,17,17,0.14);
+    display: flex;
+    align-items: center;
+    padding: 0 0.9rem 0 1.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: rgba(17,17,17,0.55);
+  }
+  .book__water {
+    position: absolute;
+    right: 0.4rem;
+    bottom: 2.6rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 6rem;
+    line-height: 1;
+    color: rgba(17,17,17,0.07);
+    pointer-events: none;
+  }
+  .book__body {
+    position: relative;
+    padding: 1.3rem 1.2rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex: 1;
+  }
+  .book__body h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.7rem; margin: 0 0 0.3rem; line-height: 1.02; }
+  .book__body p { font-size: 0.74rem; color: rgba(17,17,17,0.72); margin: 0 0 0.4rem; }
+  .book__meta { font-size: 0.58rem; color: rgba(17,17,17,0.5); }
+
+  /* ---------- mood popup ---------- */
+  .mood-pop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(17,17,17,0.35);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 2.5rem;
+  }
+  .mood-pop.open { display: flex; }
+  .mood-pop__card {
+    background: var(--paper);
+    border-radius: 14px;
+    padding: 1.6rem 1.7rem 1.4rem;
+    max-width: 22rem;
+    width: calc(100% - 2rem);
+    box-shadow: 0 20px 60px rgba(17,17,17,0.3);
+  }
+  .mood-pop__card h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin: 0 0 0.3rem;
+  }
+  .mood-pop__card p {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin: 0 0 1.1rem;
+  }
+  .mood-pop__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+  .mood-pop__grid button {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper-strong);
+    padding: 0.6rem 0.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+  .mood-pop__grid button:hover {
+    transform: translateY(-2px);
+    border-color: var(--ink);
+  }
+  .mood-pop__dismiss {
+    margin-top: 1rem;
+    background: none;
+    border: none;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    cursor: pointer;
+    padding: 0;
+  }
+  .mood-pop__dismiss:hover { color: var(--ink); }
+
+  /* mobile */
+  @media (max-width: 900px) {
+    .deck { grid-template-columns: 1fr; grid-template-areas: "main" "foot"; }
+    .side { display: none; }
+    .books { grid-template-columns: 1fr 1fr; }
+    .main { padding: 1rem 1rem 0; }
+    .main__left { margin-top: 1.5rem; }
+    .posts { justify-self: start; align-self: end; padding-bottom: 0; max-width: none; }
+    .foot__name { font-size: 7rem; }
+    .foot__name .full { display: none; }
+    .foot__name .init { display: inline; }
+    .modes { display: none; }
+    .modes__select {
+      display: block;
+      position: absolute;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.35rem 0.6rem;
+      color: var(--ink);
+      appearance: none;
+      -webkit-appearance: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+  <div class="modes"><span class="active">deck</span><span>dev</span><span>desk</span></div>
+  <select class="modes__select" aria-label="View mode">
+    <option selected>deck</option>
+    <option>dev</option>
+    <option>desk</option>
+  </select>
+
+  <aside class="side">
+    <div class="side__top">
+      <div class="side__spacer"></div>
+      <nav class="side__nav">
+        <a href="/" class="active">Home</a>
+        <a href="https://alfaruqstories.substack.com">Essays</a>
+        <a href="https://www.linkedin.com/in/umarfaruqakinwunmi">LinkedIn</a>
+      </nav>
+      <div class="side__icons">
+        <a href="https://github.com/alfaruqstories" aria-label="GitHub" title="GitHub">
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        </a>
+        <a href="https://x.com/alfaruqstories" aria-label="X" title="X">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.6l5.24 6.93zm-1.29 19.5h2.04L6.49 3.24H4.3z"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/umarfaruqakinwunmi" aria-label="LinkedIn" title="LinkedIn">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.55V9h3.57zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="side__bottom">
+      <button class="mood-toggle" aria-label="Change mood" title="Change mood"></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="main__left">
+      <div class="books">
+        <a class="book" href="https://famasi.africa" style="--rot:-1.3deg">
+          <div class="book__spine"></div>
+          <div class="book__band">web + mobile</div>
+          <div class="book__water">F</div>
+          <div class="book__body">
+            <h3>Famasi Core</h3>
+            <p>Pharmacy operating system.</p>
+            <div class="book__meta">Product</div>
+          </div>
+        </a>
+        <a class="book" href="https://famasi.africa" style="--rot:1deg">
+          <div class="book__spine"></div>
+          <div class="book__band">agents</div>
+          <div class="book__water">F</div>
+          <div class="book__body">
+            <h3>Fey</h3>
+            <p>Procurement agent for pharmacies.</p>
+            <div class="book__meta">AI agent</div>
+          </div>
+        </a>
+        <a class="book" href="#" style="--rot:-0.7deg">
+          <div class="book__spine"></div>
+          <div class="book__band">mobile</div>
+          <div class="book__water">R</div>
+          <div class="book__body">
+            <h3>Recap</h3>
+            <p>Voice-first recording and summaries.</p>
+            <div class="book__meta">Product</div>
+          </div>
+        </a>
+        <a class="book" href="#" style="--rot:1.4deg">
+          <div class="book__spine"></div>
+          <div class="book__band">photography</div>
+          <div class="book__water">L</div>
+          <div class="book__body">
+            <h3>Lagos Neon</h3>
+            <p>The city after dark.</p>
+            <div class="book__meta">Photography</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="foot__left">
+      <span class="foot__name"><span class="full">Faruq</span><span class="init">F</span></span>
+      <span class="foot__status">now building: pharmacy OS</span>
+    </div>
+    <aside class="posts">
+      <a href="https://alfaruqstories.substack.com/p/the-discovery-problem"><span>The Discovery problem</span><span>→</span></a>
+      <a href="https://alfaruqstories.substack.com"><span>Essays archive</span><span>→</span></a>
+    </aside>
+  </footer>
+
+</div>
+
+<!-- mood popup -->
+<div class="mood-pop" id="moodPop">
+  <div class="mood-pop__card">
+    <h2>What's your mood today?</h2>
+    <div class="mood-pop__grid">
+      <button data-mood="paper">Clear</button>
+      <button data-mood="misty">Focused</button>
+      <button data-mood="mint">Fresh</button>
+      <button data-mood="cream">Cozy</button>
+      <button data-mood="blush">Hopeful</button>
+      <button data-mood="lavender">Dreamy</button>
+      <button data-mood="sky">Chill</button>
+      <button data-mood="peach">Sunny</button>
+    </div>
+    <button class="mood-pop__dismiss" id="moodDismiss">or keep it plain</button>
+  </div>
+</div>
+
+<script>
+  const MOOD_TTL = 30 * 60 * 1000;
+  const moods = {
+    paper:    { cls: "",       ground: "#ffffff" },
+    misty:    { cls: "mood-misty",    ground: "#eaf3fa" },
+    mint:     { cls: "mood-mint",     ground: "#e8f5ec" },
+    cream:    { cls: "mood-cream",    ground: "#fbf3e4" },
+    blush:    { cls: "mood-blush",    ground: "#f9e8ec" },
+    lavender: { cls: "mood-lavender", ground: "#f0eaf8" },
+    sky:      { cls: "mood-sky",      ground: "#e4f0f9" },
+    peach:    { cls: "mood-peach",    ground: "#fbeedd" },
+  };
+
+  function getStoredMood() {
+    const name = localStorage.getItem("faruq-mood");
+    const at = parseInt(localStorage.getItem("faruq-mood-at") || "0", 10);
+    return moods[name] ? { name, at } : null;
+  }
+  function moodIsFresh(at) { return Date.now() - at < MOOD_TTL; }
+  function applyMoodVisual(name) {
+    document.body.classList.remove(...Object.values(moods).map(m => m.cls).filter(Boolean));
+    if (moods[name].cls) document.body.classList.add(moods[name].cls);
+  }
+  function saveMood(name) {
+    localStorage.setItem("faruq-mood", name);
+    localStorage.setItem("faruq-mood-at", String(Date.now()));
+  }
+  function openPopup() { document.getElementById("moodPop").classList.add("open"); }
+  function closePopup() { document.getElementById("moodPop").classList.remove("open"); }
+
+  const stored = getStoredMood();
+  const forceAsk = new URLSearchParams(location.search).has("ask");
+  const navType = performance.getEntriesByType("navigation")[0]?.type;
+  const isReload = navType === "reload";
+  if (!forceAsk && stored && moodIsFresh(stored.at) && !isReload) {
+    applyMoodVisual(stored.name);
+  } else {
+    if (stored) applyMoodVisual(stored.name);
+    openPopup();
+  }
+
+  document.querySelectorAll(".mood-pop__grid button").forEach(b => {
+    b.addEventListener("click", () => {
+      applyMoodVisual(b.dataset.mood);
+      saveMood(b.dataset.mood);
+      closePopup();
+    });
+  });
+  document.getElementById("moodDismiss").addEventListener("click", () => {
+    saveMood("paper");
+    applyMoodVisual("paper");
+    closePopup();
+  });
+  document.querySelector(".mood-toggle").addEventListener("click", openPopup);
+</script>
+
+</body>
+</html>
