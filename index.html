@@ -94,9 +94,6 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    position: relative;
-    z-index: 2;
-    background: var(--ground);
   }
   .side__top { display: grid; gap: 2rem; }
   .side__spacer { height: 1.5rem; }
@@ -1176,7 +1173,7 @@
   function closePopup() { document.getElementById("moodPop").classList.remove("open"); }
 
   const stored = getStoredMood();
-  if (stored) applyMoodVisual(stored.name);
+  if (stored && moodIsFresh(stored.at)) applyMoodVisual(stored.name);
 
   document.querySelectorAll(".mood-pop__grid button").forEach(b => {
     b.addEventListener("click", () => {
@@ -1239,52 +1236,36 @@
     });
   })();
 
-  // edge-wrap — cards rise, turn and fade at the edges; the fade completes exactly at the rail and screen edges
+  // edge-wrap — cards rise, turn and visibly dissolve near the rail; no hard cut
   (function () {
     const sc = document.getElementById("p13-scroll");
     if (!sc) return;
-    const track = sc.querySelector(".p13__track");
-    if (!track) return;
     const cards = [...sc.querySelectorAll(".p13")];
-    const maxAngle = 30, lift = 24, fadePx = 60, turnEnd = 0.95;
-    let m = { cx: 0, half: 0, base: 0, pitch: 0, trackW: 0, cardW: 0, railP: 0 };
-    let anim = null;
-    const refresh = () => {
-      const rect = sc.getBoundingClientRect();
+    const maxAngle = 30, lift = 24, fadePx = 520, tuck = 60, turnEnd = 0.95;
+    const cardW = cards[0].offsetWidth || 240;
+    let railW = 180;
+    const measure = () => {
       const railEl = document.querySelector(".side");
-      const railW = railEl ? parseFloat(getComputedStyle(railEl).width) || 180 : 180;
-      m = {
-        cx: rect.left + rect.width / 2,
-        half: rect.width / 2,
-        base: track.getBoundingClientRect().left,
-        pitch: cards[1].getBoundingClientRect().left - cards[0].getBoundingClientRect().left,
-        trackW: track.getBoundingClientRect().width,
-        cardW: cards[0].getBoundingClientRect().width,
-        railP: (railW - (rect.left + rect.width / 2)) / (rect.width / 2)
-      };
-      anim = track.getAnimations().find(a => a.animationName === "p10marquee") || anim;
+      railW = railEl ? parseFloat(getComputedStyle(railEl).width) || 180 : 180;
     };
-    refresh();
-    window.addEventListener("resize", refresh);
+    measure();
+    window.addEventListener("resize", measure);
     const apply = () => {
-      if (!m.half || !anim) return;
-      const duration = anim.effect.getTiming().duration;
-      const raw = anim.currentTime || 0;
-      const progress = ((raw % duration) + duration) % duration / duration;
-      const trackX = -(m.trackW / 2) * progress;
-      const halfCardP = (m.cardW / 2) / m.half;
-      const fadeEndL = m.railP - halfCardP;
-      const fadeStartL = fadeEndL + fadePx / m.half;
-      for (let i = 0; i < cards.length; i++) {
-        const x = m.base + trackX + i * m.pitch;
-        const p = (x - m.cx) / m.half;
+      const rect = sc.getBoundingClientRect();
+      if (!rect.width) return;
+      const cx = rect.left + rect.width / 2;
+      const half = rect.width / 2;
+      const fadeEndL = (railW - tuck + cardW / 2 - cx) / half;
+      const fadeStartL = fadeEndL + fadePx / half;
+      for (const card of cards) {
+        const c = card.getBoundingClientRect();
+        const p = (c.left + c.width / 2 - cx) / half;
         const q = Math.min(Math.abs(p), turnEnd);
         const angle = Math.sign(p) * q * (maxAngle / turnEnd);
         const y = -((q / turnEnd) ** 2) * lift;
         let opacity = 1;
         if (p < fadeEndL) opacity = 0;
         else if (p < fadeStartL) opacity = (p - fadeEndL) / (fadeStartL - fadeEndL);
-        const card = cards[i];
         card.style.transform = `translateY(${y.toFixed(1)}px) rotateY(${angle.toFixed(1)}deg)`;
         card.style.opacity = opacity.toFixed(3);
       }
