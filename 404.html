@@ -807,7 +807,7 @@
             <div>
               <span class="pcard__kicker">no.01 · FAMASI</span>
               <h3 class="pcard__title">Fey</h3>
-              <p class="pcard__sum">Always-on desktop procurement agent: monitors stock, sources suppliers, drafts purchase orders across ERPs.</p>
+              <p class="pcard__sum">&quot;Always-on desktop procurement agent: monitors stock, sources suppliers, drafts purchase orders across ERPs.</p>
             </div>
             <div>
               <p class="pcard__meta"><span>agent · desktop</span><span>2026 · trial</span></p>
@@ -1091,6 +1091,7 @@
                   <div class="p10__agentbody"></div>
                 </div>
               </div>
+              <span class="p13__year"></span>
               <span class="p13__issue">AgentIndex</span>
             </div>
           </div>
@@ -1143,6 +1144,8 @@
 </div>
 
 <script>
+  window.FARUQ_PROJECTS = [{"slug":"fey","name":"Fey","summary":"\"Always-on desktop procurement agent: monitors stock, sources suppliers, drafts purchase orders across ERPs.","body":"Always-on desktop procurement agent: monitors stock, sources suppliers, drafts purchase orders across ERPs."},{"slug":"symphonyrx","name":"SymphonyRx","summary":"Multimodal onboarding and LLM orchestration: converts CSV, PDF and handwritten pharmacy data into inventory schema. 1 week → 10 minutes.","body":"Multimodal onboarding and LLM orchestration: converts CSV, PDF and handwritten pharmacy data into inventory schema. 1 week → 10 minutes."},{"slug":"rxlink","name":"RxLink","summary":"Prescription link and routing layer: connects prescriber to pharmacy to patient refill.","body":"Prescription link and routing layer: connects prescriber to pharmacy to patient refill."},{"slug":"coreos","name":"CoreOS","summary":"Internal operations platform. Reduced average order handle time from 3 hours to 37 minutes.","body":"Internal operations platform. Reduced average order handle time from 3 hours to 37 minutes."},{"slug":"dispensaryos","name":"DispensaryOS","summary":"Pharmacy POS, inventory and operating system — live across 1,000+ pharmacies in Nigeria.","body":"Pharmacy POS, inventory and operating system — live across 1,000+ pharmacies in Nigeria."},{"slug":"policy-vault","name":"Policy Vault","summary":"RAG-powered research tool over 9,000+ African policy documents. Query, compare, synthesise with natural language.","body":"RAG-powered research tool over 9,000+ African policy documents. Query, compare, synthesise with natural language."},{"slug":"dbmanager","name":"DBManager","summary":"Premium desktop database manager: 50+ databases, SSH tunnels, AI queries. Open source.","body":"Premium desktop database manager: 50+ databases, SSH tunnels, AI queries. Open source."},{"slug":"brainbridge","name":"BrainBridge","summary":"Generate portable Markdown artifacts from Obsidian vaults — carry your notes between agents.","body":"Generate portable Markdown artifacts from Obsidian vaults — carry your notes between agents."},{"slug":"how-we-cared","name":"How we cared","summary":"Famasi's 2025 annual recap — how we cared for individuals, providers and pharmacies.","body":"Famasi's 2025 annual recap — how we cared for individuals, providers and pharmacies."},{"slug":"git-steward","name":"git-steward","summary":"Local-first git worktree hygiene: scan, dashboard, checkpoint, serve. Never lose local work.","body":"Local-first git worktree hygiene: scan, dashboard, checkpoint, serve. Never lose local work."},{"slug":"mcp-ferry","name":"mcp ferry","summary":"One local gateway that aggregates every agent MCP server — one login, shared across all coding agents.","body":"One local gateway that aggregates every agent MCP server — one login, shared across all coding agents."},{"slug":"agentindex","name":"AgentIndex","summary":"A long list directory of all agent products and tools to collaborate with LLMs.","body":"A long list directory of all agent products and tools to collaborate with LLMs."}];
+  window.FARUQ_PROFILE = "Co-founder and Head of Product at Famasi Africa, building pharmacy infrastructure for Nigeria and emerging markets.\n\nI work across product, growth, operations, and AI product development to turn fragmented pharmacy workflows into usable software, networks, and tools.";
   const MOOD_TTL = 30 * 60 * 1000;
   const moods = {
     paper:    { cls: "",       ground: "#ffffff" },
@@ -1348,7 +1351,7 @@
     }
     if (cleanPath === "/profile") {
       projectGroups.forEach(item => item.classList.add("collapsed"));
-      detailView.innerHTML = `<h1>Faruq Akinwunmi</h1><div class="detail-view__body"><p>Co-founder and Head of Product at Famasi Africa, building pharmacy infrastructure for Nigeria and emerging markets.</p><p>I work across product, growth, operations, and AI product development to turn fragmented pharmacy workflows into usable software, networks, and tools.</p></div>`;
+      detailView.innerHTML = `<h1>Faruq Akinwunmi</h1><div class="detail-view__body">${markdown(window.FARUQ_PROFILE || "")}</div>`;
       return;
     }
     if (cleanPath === "/photos") {
@@ -1357,9 +1360,9 @@
     }
     if (project) {
       setExpanded("projects");
-      const item = [...projectMap.values()].find(value => value.slug === project[1]);
+      const item = (window.FARUQ_PROJECTS || []).find(value => value.slug === project[1]) || [...projectMap.values()].find(value => value.slug === project[1]);
       if (!item) return renderRoute("/");
-      detailView.innerHTML = `<h1>${escapeHtml(item.name)}</h1><p class="detail-view__body">${escapeHtml(item.summary)}</p>`;
+      detailView.innerHTML = `<h1>${escapeHtml(item.name)}</h1><div class="detail-view__body">${markdown(item.body || item.summary)}</div>`;
       return;
     }
     if (post) {
