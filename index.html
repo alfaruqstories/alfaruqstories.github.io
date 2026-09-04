@@ -719,10 +719,21 @@
   .detail-view__body p{margin:0 0 1.2rem}
   .detail-view__body h2,.detail-view__body h3{font-family:var(--font-display);color:var(--ink);line-height:1.1;margin:2rem 0 .7rem}
   .detail-view__meta{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-top:2rem}
-  .photos-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin-top:2rem}
-  .photos-grid img{display:block;width:100%;aspect-ratio:1;object-fit:cover;background:var(--paper-strong)}
+  .photos-grid{columns:3;column-gap:.8rem;margin-top:1.6rem}
+  .photos-grid img{display:block;width:100%;height:auto;margin-bottom:.8rem;background:var(--paper-strong);cursor:zoom-in;border-radius:2px}
+  .photos-grid img:hover{opacity:.92}
+  .photos-head{font-family:var(--font-mono);font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 .4rem}
+  .photos-intro{font-family:var(--font-display);font-size:clamp(1.6rem,3.4vw,2.6rem);line-height:1.05;margin:0 0 1.6rem;color:var(--ink)}
+  .lightbox{position:fixed;inset:0;z-index:200;background:rgba(10,10,10,.92);display:none;align-items:center;justify-content:center}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:86vw;max-height:86vh;object-fit:contain;border-radius:3px}
+  .lightbox__close{position:absolute;top:1.2rem;right:1.4rem;background:none;border:0;color:#fff;font-family:var(--font-mono);font-size:1.2rem;cursor:pointer;line-height:1}
+  .lightbox__nav{position:absolute;top:50%;transform:translateY(-50%);background:none;border:0;color:#fff;font-family:var(--font-mono);font-size:2rem;cursor:pointer;padding:0 1rem;opacity:.7}
+  .lightbox__nav:hover{opacity:1}
+  .lightbox__prev{left:1rem}.lightbox__next{right:1rem}
+  .lightbox__cap{position:absolute;bottom:1.2rem;left:0;right:0;text-align:center;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.75)}
   .photos-empty{max-width:28rem;color:var(--ink-soft);line-height:1.6}
-  @media(max-width:700px){.nowplaying{display:none}.detail-view{padding:1.5rem 1rem 4rem}.photos-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:700px){.nowplaying{display:none}.detail-view{padding:1.5rem 1rem 4rem}.photos-grid{columns:2;column-gap:.6rem}}
 </style>
 </head>
 <body>
@@ -1330,8 +1341,28 @@
   };
   const renderPhotos = () => {
     const items = window.FARUQ_PHOTOS || [];
-    detailView.innerHTML = `<div class="photos-grid" id="photos-grid"></div>`;
-    document.getElementById("photos-grid").innerHTML = items.map(item => `<img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.alt || "")}" loading="lazy">`).join("");
+    const q = encodeURIComponent("Why the gallery exists"); // keep alt minimal
+    detailView.innerHTML = `<p class="photos-head">photography · diary of everyday people, places &amp; aesthetics</p><h1 class="photos-intro">Unpublished frames — a visual diary of the places in between.</h1><div class="photos-grid" id="photos-grid"></div>`;
+    document.getElementById("photos-grid").innerHTML = items.map((item, i) => `<img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.alt || "Untitled frame")}" data-index="${i}" loading="lazy">`).join("");
+    const lightbox = document.createElement("div");
+    lightbox.className = "lightbox";
+    lightbox.innerHTML = `<button class="lightbox__close" aria-label="Close">×</button><button class="lightbox__nav lightbox__prev" aria-label="Previous">‹</button><img alt=""><button class="lightbox__nav lightbox__next" aria-label="Next">›</button><div class="lightbox__cap"></div>`;
+    document.body.appendChild(lightbox);
+    const lbImg = lightbox.querySelector("img");
+    const lbCap = lightbox.querySelector(".lightbox__cap");
+    let idx = 0;
+    const show = i => { idx = (i + items.length) % items.length; lbImg.src = items[idx].url; lbCap.textContent = `${idx + 1} / ${items.length}`; lightbox.classList.add("open"); };
+    lightbox.querySelector(".lightbox__close").addEventListener("click", () => lightbox.classList.remove("open"));
+    lightbox.querySelector(".lightbox__prev").addEventListener("click", () => show(idx - 1));
+    lightbox.querySelector(".lightbox__next").addEventListener("click", () => show(idx + 1));
+    lightbox.addEventListener("click", e => { if (e.target === lightbox) lightbox.classList.remove("open"); });
+    document.addEventListener("keydown", e => {
+      if (!lightbox.classList.contains("open")) return;
+      if (e.key === "Escape") lightbox.classList.remove("open");
+      if (e.key === "ArrowLeft") show(idx - 1);
+      if (e.key === "ArrowRight") show(idx + 1);
+    });
+    document.querySelectorAll("#photos-grid img").forEach(img => img.addEventListener("click", () => show(+img.dataset.index)));
   };
   const renderRoute = path => {
     const cleanPath = path.replace(/\/+$/, "") || "/";
