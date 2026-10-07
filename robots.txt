@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://alfaruqstories.github.io/sitemap.xml
