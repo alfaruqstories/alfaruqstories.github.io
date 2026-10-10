@@ -96,8 +96,9 @@
   .modes span.active { background: var(--ink); color: var(--paper); }
   .modes { display:none !important; }
   .modes__select { display: none !important; }
-  /* ---------- mobile nav (shown ≤900px via media query) ---------- */
-  .mnav { display: none; }
+  /* ---------- mobile drawer (shown ≤900px via media query) ---------- */
+  .burger { display: none; }
+  .scrim { display: none; }
 
   /* ---------- left rail ---------- */
   .side {
@@ -212,6 +213,7 @@
     min-height: 0;
     padding: 1rem 2.6rem 0 2rem;
     overflow: visible;
+    overflow-y: auto;
     display: flex;
     align-items: center;
   }
@@ -376,24 +378,45 @@
     .foot__name .init { display: inline; }
     .modes { display: none; }
     .modes__select { display: none !important; }
-    .mnav {
-      display: grid;
-      gap: 0.55rem;
-      padding: 0.2rem 0 0.9rem;
+    .burger {
+      display: inline-flex;
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 80;
+      background: none;
+      border: 0;
+      padding: 0.3rem;
+      cursor: pointer;
+      color: var(--ink);
     }
-    .mnav__links {
+    .scrim {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 65;
+      background: rgba(17,17,17,0.25);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    body.nav-open .scrim { opacity: 1; pointer-events: auto; }
+    .side {
       display: flex;
-      gap: 1.1rem;
-      font-family: var(--font-mono);
-      font-size: 0.62rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: min(17rem, 84vw);
+      z-index: 70;
+      background: var(--paper);
+      box-shadow: 12px 0 40px rgba(17,17,17,0.12);
+      transform: translateX(-102%);
+      transition: transform 0.3s ease;
+      padding: 3.5rem 1.6rem 0;
     }
-    .mnav__links a { color: var(--ink-faint); text-decoration: none; }
-    .mnav__links a.active { color: var(--ink); }
-    .mnav__icons { display: flex; align-items: center; gap: 0.85rem; }
-    .mnav__icons a, .mnav__icons button { color: var(--ink-faint); background: none; border: 0; padding: 0; cursor: pointer; display: inline-flex; align-items: center; }
-    .mnav__icons .mood-toggle { margin: 0; }
+    body.nav-open .side { transform: none; }
+    .main__left { margin-top: auto; margin-bottom: auto; }
   }
 
 /* complete v13 source copied from design-variants.html */
@@ -807,37 +830,10 @@
   </aside>
 
   <main class="main">
-    <nav class="mnav" aria-label="Site">
-      <div class="mnav__links">
-        <a href="/" data-route="/">Projects</a>
-        <a href="/posts" data-route="/posts">Posts</a>
-        <a href="/photos" data-route="/photos">Photos</a>
-        <a href="/profile" data-route="/profile">Profile</a>
-      </div>
-      <div class="mnav__icons">
-        <a href="https://github.com/alfaruqstories" aria-label="GitHub" title="GitHub">
-          <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
-        </a>
-        <a href="https://x.com/alfaruqstories" aria-label="X" title="X">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.6l5.24 6.93zm-1.29 19.5h2.04L6.49 3.24H4.3z"/></svg>
-        </a>
-        <a href="https://www.linkedin.com/in/umarfaruqakinwunmi" aria-label="LinkedIn" title="LinkedIn">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.55V9h3.57zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0z"/></svg>
-        </a>
-        <a href="https://instagram.com/theunpublishedgallery" aria-label="Instagram" title="Instagram">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-        </a>
-        <a href="https://alfaruqstories.substack.com" aria-label="Substack" title="Substack">
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><rect x="4" y="4.5" width="16" height="2.6" rx="1.3"/><rect x="4" y="9.2" width="16" height="4" rx="1.6"/><rect x="4" y="15.2" width="16" height="4" rx="1.6"/></svg>
-        </a>
-        <a href="https://calendar.app.google/BHj7XMbX437S3hRb7" aria-label="Book a chat" title="Book a chat">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 2.5h2v2h6v-2h2v2h2.25A2.75 2.75 0 0 1 22 7.25v11A2.75 2.75 0 0 1 19.25 21H4.75A2.75 2.75 0 0 1 2 18.25v-11A2.75 2.75 0 0 1 4.75 4.5H7v-2Zm-2.25 4A.75.75 0 0 0 4 7.25V9h16V7.25a.75.75 0 0 0-.75-.75H18v1h-2v-1H9v1H7v-1H4.75ZM20 11H4v7.25c0 .414.336.75.75.75h14.5a.75.75 0 0 0 .75-.75V11Z"/></svg>
-        </a>
-        <button class="mood-toggle" aria-label="Change mood" title="Change mood">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4 4 0 0 0 7 0"/><circle cx="9" cy="9.5" r="0.6" fill="currentColor" stroke="none"/><circle cx="15" cy="9.5" r="0.6" fill="currentColor" stroke="none"/></svg>
-        </button>
-      </div>
-    </nav>
+    <button class="burger" aria-label="Open menu" title="Menu">
+      <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2.5 5.5h15M2.5 10h15M2.5 14.5h15"/></svg>
+    </button>
+    <div class="scrim" aria-hidden="true"></div>
     <div class="main__left">
       <div id="home-view">
       <section id="postcards13">
@@ -1445,7 +1441,11 @@
     }
     renderRoute("/");
   };
-  const go = path => { history.pushState({}, "", path); renderRoute(path); };
+  const closeDrawer = () => document.body.classList.remove("nav-open");
+  const go = path => { closeDrawer(); history.pushState({}, "", path); renderRoute(path); };
+  document.querySelector(".burger").addEventListener("click", () => document.body.classList.toggle("nav-open"));
+  document.querySelector(".scrim").addEventListener("click", closeDrawer);
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeDrawer(); });
   document.addEventListener("click", event => {
     const routeLink = event.target.closest("a[data-route]");
     if (routeLink) { event.preventDefault(); go(routeLink.dataset.route); return; }
